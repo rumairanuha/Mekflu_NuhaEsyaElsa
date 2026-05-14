@@ -98,6 +98,7 @@ body {
   box-shadow: var(--shadow);
   padding: 26px 22px;
   margin-bottom: 20px;
+  overflow: hidden;
 }
 .card-title {
   font-family: 'Playfair Display', serif;
@@ -300,7 +301,7 @@ input[type=number]:focus { border-color: var(--sky-dk); background: white; }
 .house-count { font-size: 0.78rem; color: var(--lavender-dk); font-weight: 600; }
 
 /* ===== POWER METER ===== */
-.meter-wrap { padding: 0 0 16px; }
+.meter-wrap { padding: 16px 22px 16px; }
 .meter-labels {
   display: flex;
   justify-content: space-between;
@@ -308,10 +309,11 @@ input[type=number]:focus { border-color: var(--sky-dk); background: white; }
   font-size: 0.72rem;
   color: var(--muted);
   margin-bottom: 8px;
-  gap: 12px;
+  width: 100%;
+  overflow: hidden;
 }
 .meter-labels .ml-name { font-weight: 600; white-space: nowrap; flex-shrink: 0; }
-.meter-labels .ml-val  { text-align: right; white-space: nowrap; flex-shrink: 0; font-variant-numeric: tabular-nums; }
+.meter-labels .ml-val  { text-align: right; white-space: nowrap; flex-shrink: 0; font-variant-numeric: tabular-nums; font-size: 0.68rem; }
 .meter-track {
   width: 100%; height: 12px;
   background: var(--border);
@@ -892,7 +894,8 @@ function calculate() {
               : eta < 0.75 ? 'Efisiensi cukup baik.'
               : 'Efisiensi optimal.';
   document.getElementById('report-txt').innerHTML =
-    `Sistem menghasilkan daya <strong>${P_kw.toFixed(2)} kW</strong> dengan head <strong>${H} m</strong> dan debit <strong>${Q.toFixed(1)} m³/s</strong>. Kategori: <strong>${cat.emoji} ${cat.label}</strong>.<br><br>
+    `Sistem menghasilkan daya <strong>${P_kw.toFixed(2)} kW</strong> dengan head <strong>${H} m</strong> dan debit <strong>${Q.toFixed(1)} m³/s</strong>.<br>
+    Kategori: <strong>${cat.emoji} ${cat.label}</strong>.<br><br>
      Energi harian <strong>${e_day.toFixed(1)} kWh</strong>, setara <strong>${fmtRupiah(rupiah_mon)}/bulan</strong> (tarif PLN Rp 1.699/kWh) atau <strong>${rupTahun}/tahun</strong>.<br><br>
      💡 Nilai ini dapat membiayai sekitar <strong>${mbg_count.toLocaleString('id-ID')} porsi Makanan Bergizi Gratis (MBG)</strong> per bulan (Rp 10.000/porsi) dan menyuplai listrik <strong>${rumah.toLocaleString('id-ID')} rumah tangga</strong>. ${efKomen}`;
 }
