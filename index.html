@@ -289,11 +289,21 @@ input[type=number]:focus { border-color: var(--sky-dk); background: white; }
 }
 .house-icon { font-size: 1.2rem; line-height: 1; transition: transform 0.2s; }
 .house-icon:hover { transform: scale(1.3); }
+.house-number {
+  font-family: 'Playfair Display', serif;
+  font-size: 2.8rem;
+  font-weight: 700;
+  color: var(--lavender-dk);
+  line-height: 1.1;
+  margin: 8px 0 4px;
+}
 .house-count { font-size: 0.78rem; color: var(--lavender-dk); font-weight: 600; }
 
 /* ===== POWER METER ===== */
 .meter-wrap { padding: 0 0 16px; }
-.meter-labels { display: flex; justify-content: space-between; font-size: 0.75rem; color: var(--muted); margin-bottom: 6px; }
+.meter-labels { display: flex; justify-content: space-between; font-size: 0.72rem; color: var(--muted); margin-bottom: 6px; gap: 8px; }
+.meter-labels span { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
+.meter-labels span:last-child { text-align: right; flex-shrink: 0; }
 .meter-track {
   width: 100%; height: 12px;
   background: var(--border);
@@ -344,8 +354,8 @@ input[type=number]:focus { border-color: var(--sky-dk); background: white; }
 @keyframes waveX  { from { transform:translateX(0); } to { transform:translateX(-50%); } }
 @keyframes housePop { 0% { transform:scale(0); opacity:0; } 60% { transform:scale(1.2); } 100% { transform:scale(1); opacity:1; } }
 
-.turbine-blades    { transform-origin: 214px 178px; animation: spin linear infinite; }
-.generator-rotor   { transform-origin: 360px 176px; animation: spin linear infinite; }
+.turbine-blades    { transform-origin: 248px 225px; animation: spin linear infinite; }
+.generator-rotor   { transform-origin: 367px 225px; animation: spin linear infinite; }
 .wflow-h { stroke-dasharray:18 10; animation: flowR linear infinite; }
 .wflow-v { stroke-dasharray:14 8;  animation: flowD linear infinite; }
 .bolt    { animation: boltPulse 1.3s ease-in-out infinite; }
@@ -457,26 +467,221 @@ input[type=number]:focus { border-color: var(--sky-dk); background: white; }
       <div id="dtext">Menunggu input...</div>
     </div>
 
-    <!-- REPORT -->
-    <div class="report-card">
-      <div class="rt">📋 Auto Report</div>
-      <div class="rb" id="report-txt">Atur parameter untuk menghasilkan laporan otomatis...</div>
-    </div>
-  </div>
+  </div><!-- /left -->
 
   <!-- ===== RIGHT COLUMN ===== -->
   <div>
 
-    <!-- MAIN OUTPUT -->
-    <div class="out-main">
-      <div class="om-label">⚡ Estimasi Daya Listrik</div>
-      <div class="om-val" id="o-power">—</div>
-      <div class="om-unit">kilowatt (kW)</div>
-      <div id="o-cat"></div>
+    <!-- VISUALIZATION - paling atas -->
+    <div class="viz-card" style="margin-bottom:20px">
+      <div class="viz-head">
+        <h2>🌊 Visualisasi Sistem Turbin Air</h2>
+      </div>
+      <div class="scene-bg">
+        <svg id="scene" viewBox="0 0 560 300" xmlns="http://www.w3.org/2000/svg">
+          <!-- SKY BACKGROUND -->
+          <defs>
+            <linearGradient id="skyGrad" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#d0eaf8"/>
+              <stop offset="60%" stop-color="#e8f5fd"/>
+              <stop offset="100%" stop-color="#c8e8d0"/>
+            </linearGradient>
+            <linearGradient id="waterGrad" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#7ac8e8"/>
+              <stop offset="100%" stop-color="#4a9abe"/>
+            </linearGradient>
+            <linearGradient id="groundGrad" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#c8dda0"/>
+              <stop offset="100%" stop-color="#a0b870"/>
+            </linearGradient>
+            <linearGradient id="concreteGrad" x1="0" y1="0" x2="1" y2="0">
+              <stop offset="0%" stop-color="#b0c0c8"/>
+              <stop offset="100%" stop-color="#d8e4e8"/>
+            </linearGradient>
+            <linearGradient id="genGrad" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#ffe888"/>
+              <stop offset="100%" stop-color="#f0c840"/>
+            </linearGradient>
+          </defs>
+
+          <!-- BACKGROUND -->
+          <rect width="560" height="300" fill="url(#skyGrad)" rx="10"/>
+
+          <!-- GROUND / TERRAIN -->
+          <path d="M0,220 Q80,200 160,215 Q200,222 240,218 L240,300 L0,300Z" fill="url(#groundGrad)" opacity="0.8"/>
+          <path d="M240,218 L560,218 L560,300 L240,300Z" fill="url(#groundGrad)" opacity="0.8"/>
+
+          <!-- MOUNTAIN / CLIFF behind reservoir -->
+          <path d="M0,120 Q40,60 90,80 Q130,95 160,140 L160,220 L0,220Z" fill="#b8c8a0" opacity="0.6"/>
+          <path d="M0,120 Q40,60 90,80 Q130,95 160,140" fill="none" stroke="#90a878" stroke-width="1.5" opacity="0.5"/>
+
+          <!-- RESERVOIR DAM WALL (concrete) -->
+          <path d="M148,72 L160,72 L165,218 L140,218Z" fill="url(#concreteGrad)" stroke="#8899a8" stroke-width="1.5"/>
+          <!-- dam detail lines -->
+          <line x1="150" y1="90" x2="163" y2="90" stroke="#8899a8" stroke-width="0.8" opacity="0.5"/>
+          <line x1="149" y1="110" x2="163" y2="110" stroke="#8899a8" stroke-width="0.8" opacity="0.5"/>
+          <line x1="148" y1="130" x2="163" y2="130" stroke="#8899a8" stroke-width="0.8" opacity="0.5"/>
+          <line x1="147" y1="150" x2="163" y2="150" stroke="#8899a8" stroke-width="0.8" opacity="0.5"/>
+          <line x1="146" y1="170" x2="163" y2="170" stroke="#8899a8" stroke-width="0.8" opacity="0.5"/>
+          <line x1="145" y1="190" x2="163" y2="190" stroke="#8899a8" stroke-width="0.8" opacity="0.5"/>
+
+          <!-- RESERVOIR WATER -->
+          <path d="M0,80 Q40,72 90,76 Q120,78 148,72 L148,218 L0,218Z" fill="url(#waterGrad)" opacity="0.75"/>
+          <!-- reservoir water surface waves -->
+          <g class="wave-g" style="animation-duration:4s">
+            <path d="M10,85 Q30,80 50,85 Q70,90 90,85 Q110,80 130,85 Q150,90 170,85" fill="none" stroke="white" stroke-width="1.2" opacity="0.4"/>
+            <path d="M10,93 Q35,88 60,93 Q85,98 110,93 Q135,88 160,93" fill="none" stroke="white" stroke-width="0.8" opacity="0.25"/>
+          </g>
+          <!-- RESERVOIR LABEL -->
+          <text x="74" y="65" text-anchor="middle" font-size="9" fill="#1a6080" font-family="Nunito" font-weight="700">Waduk / Reservoir</text>
+
+          <!-- HEAD BRACKET (vertical measurement) -->
+          <line x1="172" y1="78" x2="172" y2="218" stroke="#6aaa7a" stroke-width="1" stroke-dasharray="4,3"/>
+          <line x1="168" y1="78" x2="176" y2="78" stroke="#6aaa7a" stroke-width="1.8"/>
+          <line x1="168" y1="218" x2="176" y2="218" stroke="#6aaa7a" stroke-width="1.8"/>
+          <text x="181" y="152" text-anchor="start" font-size="9" fill="#3a8050" font-family="Nunito" font-weight="700">H=<tspan id="svg-h">10</tspan>m</text>
+
+          <!-- PENSTOCK (pipe from reservoir down) -->
+          <!-- outer pipe wall -->
+          <rect x="154" y="78" width="18" height="145" rx="5" fill="#7ab0cc" stroke="#4a88aa" stroke-width="2"/>
+          <!-- pipe highlight -->
+          <rect x="157" y="82" width="5" height="138" rx="2" fill="white" opacity="0.25"/>
+          <!-- water flow inside penstock -->
+          <line x1="163" y1="88" x2="163" y2="218" class="wflow-v" id="vfl" stroke="#a8e0f8" stroke-width="4" opacity="0.8"/>
+          <!-- pipe flange top -->
+          <rect x="150" y="76" width="26" height="8" rx="3" fill="#5a90b0" stroke="#3a7090" stroke-width="1.2"/>
+          <!-- pipe flange bottom -->
+          <rect x="150" y="214" width="26" height="8" rx="3" fill="#5a90b0" stroke="#3a7090" stroke-width="1.2"/>
+          <!-- PENSTOCK label -->
+          <text x="197" y="155" text-anchor="start" font-size="7.5" fill="#3a7090" font-family="Nunito" font-weight="600" transform="rotate(0)">Pipa</text>
+          <text x="197" y="165" text-anchor="start" font-size="7.5" fill="#3a7090" font-family="Nunito" font-weight="600">Pesat</text>
+
+          <!-- POWERHOUSE BUILDING -->
+          <rect x="222" y="190" width="140" height="62" rx="6" fill="#e8e0d0" stroke="#b0a090" stroke-width="2"/>
+          <!-- building roof -->
+          <path d="M218,192 L292,170 L366,192Z" fill="#c8b8a0" stroke="#a09080" stroke-width="1.5"/>
+          <!-- building window -->
+          <rect x="238" y="200" width="22" height="18" rx="3" fill="#a8d0e8" stroke="#6090a8" stroke-width="1"/>
+          <rect x="268" y="200" width="22" height="18" rx="3" fill="#a8d0e8" stroke="#6090a8" stroke-width="1"/>
+          <!-- door -->
+          <rect x="303" y="210" width="18" height="28" rx="3" fill="#8878a0" stroke="#605870" stroke-width="1"/>
+          <circle cx="319" cy="225" r="1.5" fill="#d0c0e0"/>
+          <!-- POWERHOUSE label -->
+          <text x="292" y="187" text-anchor="middle" font-size="8" fill="#605040" font-family="Nunito" font-weight="700">Rumah Turbin</text>
+
+          <!-- HORIZONTAL INTAKE CHANNEL (penstock to turbine) -->
+          <rect x="166" y="213" width="62" height="14" rx="4" fill="#7ab0cc" stroke="#4a88aa" stroke-width="1.5"/>
+          <line x1="172" y1="220" x2="224" y2="220" class="wflow-h" id="hfl" stroke="#a8e0f8" stroke-width="3.5" opacity="0.85"/>
+
+          <!-- TURBINE HOUSING (Francis / Pelton style realistic) -->
+          <!-- outer casing (spiral/volute) -->
+          <ellipse cx="248" cy="225" rx="30" ry="28" fill="#c0d8e8" stroke="#4a88aa" stroke-width="2.5"/>
+          <ellipse cx="248" cy="225" rx="22" ry="22" fill="#a0c8e0" stroke="#3a70a0" stroke-width="1.5"/>
+          <!-- inlet guide vanes (stay vanes) -->
+          <line x1="233" y1="210" x2="240" y2="217" stroke="#3a70a0" stroke-width="1.2" opacity="0.7"/>
+          <line x1="248" y1="205" x2="248" y2="214" stroke="#3a70a0" stroke-width="1.2" opacity="0.7"/>
+          <line x1="263" y1="210" x2="256" y2="217" stroke="#3a70a0" stroke-width="1.2" opacity="0.7"/>
+          <line x1="268" y1="225" x2="259" y2="225" stroke="#3a70a0" stroke-width="1.2" opacity="0.7"/>
+          <line x1="263" y1="240" x2="256" y2="233" stroke="#3a70a0" stroke-width="1.2" opacity="0.7"/>
+          <line x1="248" y1="245" x2="248" y2="236" stroke="#3a70a0" stroke-width="1.2" opacity="0.7"/>
+          <line x1="233" y1="240" x2="240" y2="233" stroke="#3a70a0" stroke-width="1.2" opacity="0.7"/>
+          <line x1="228" y1="225" x2="237" y2="225" stroke="#3a70a0" stroke-width="1.2" opacity="0.7"/>
+
+          <!-- TURBINE RUNNER BLADES (Francis style curved) -->
+          <g class="turbine-blades" id="tb">
+            <path d="M248,210 Q255,215 255,225 Q255,233 248,238 Q243,233 243,225 Q243,217 248,210Z" fill="#3a88c0" opacity="0.85" transform="rotate(0,248,225)"/>
+            <path d="M248,210 Q255,215 255,225 Q255,233 248,238 Q243,233 243,225 Q243,217 248,210Z" fill="#3a88c0" opacity="0.85" transform="rotate(40,248,225)"/>
+            <path d="M248,210 Q255,215 255,225 Q255,233 248,238 Q243,233 243,225 Q243,217 248,210Z" fill="#3a88c0" opacity="0.85" transform="rotate(80,248,225)"/>
+            <path d="M248,210 Q255,215 255,225 Q255,233 248,238 Q243,233 243,225 Q243,217 248,210Z" fill="#3a88c0" opacity="0.85" transform="rotate(120,248,225)"/>
+            <path d="M248,210 Q255,215 255,225 Q255,233 248,238 Q243,233 243,225 Q243,217 248,210Z" fill="#3a88c0" opacity="0.85" transform="rotate(160,248,225)"/>
+            <path d="M248,210 Q255,215 255,225 Q255,233 248,238 Q243,233 243,225 Q243,217 248,210Z" fill="#3a88c0" opacity="0.85" transform="rotate(200,248,225)"/>
+            <path d="M248,210 Q255,215 255,225 Q255,233 248,238 Q243,233 243,225 Q243,217 248,210Z" fill="#3a88c0" opacity="0.85" transform="rotate(240,248,225)"/>
+            <path d="M248,210 Q255,215 255,225 Q255,233 248,238 Q243,233 243,225 Q243,217 248,210Z" fill="#3a88c0" opacity="0.85" transform="rotate(280,248,225)"/>
+            <path d="M248,210 Q255,215 255,225 Q255,233 248,238 Q243,233 243,225 Q243,217 248,210Z" fill="#3a88c0" opacity="0.85" transform="rotate(320,248,225)"/>
+            <!-- center hub -->
+            <circle cx="248" cy="225" r="6" fill="#e8f4fc" stroke="#3a88c0" stroke-width="2"/>
+            <circle cx="248" cy="225" r="2.5" fill="#3a88c0"/>
+          </g>
+          <!-- Turbine label -->
+          <text x="248" y="197" text-anchor="middle" font-size="8.5" fill="#1a5070" font-family="Nunito" font-weight="700">Turbin</text>
+          <text x="248" y="207" text-anchor="middle" font-size="7.5" fill="#4a88a8" font-family="Nunito" id="svg-q">Q: 1.2 m³/s</text>
+
+          <!-- DRAFT TUBE (tailrace outlet below turbine) -->
+          <path d="M238,253 Q234,268 226,278 Q218,288 200,290" fill="none" stroke="#7ab0cc" stroke-width="10" stroke-linecap="round" opacity="0.6"/>
+          <path d="M258,253 Q262,268 270,278 Q278,288 295,290" fill="none" stroke="#7ab0cc" stroke-width="10" stroke-linecap="round" opacity="0.6"/>
+          <path d="M238,253 Q234,268 226,278 Q218,288 200,290" class="wflow-h" id="tailfl" fill="none" stroke="#5aaaca" stroke-width="2.5" opacity="0.6"/>
+          <text x="248" y="295" text-anchor="middle" font-size="7.5" fill="#5aaaca" font-family="Nunito">Saluran Buang</text>
+
+          <!-- SHAFT (horizontal, turbine to generator) -->
+          <rect x="276" y="221" width="52" height="8" rx="4" fill="#90a8b8" stroke="#6080a0" stroke-width="1.2"/>
+          <!-- shaft coupling flanges -->
+          <rect x="272" y="219" width="8" height="12" rx="2" fill="#7090a8" stroke="#5070a0" stroke-width="1"/>
+          <rect x="320" y="219" width="8" height="12" rx="2" fill="#7090a8" stroke="#5070a0" stroke-width="1"/>
+          <circle class="rip" cx="300" cy="225" r="4" fill="none" stroke="#a8c8d8" stroke-width="1.5" opacity="0.7" style="animation-delay:0s"/>
+          <circle class="rip" cx="300" cy="225" r="4" fill="none" stroke="#a8c8d8" stroke-width="1.5" opacity="0.5" style="animation-delay:0.8s"/>
+
+          <!-- GENERATOR BODY (realistic cylindrical) -->
+          <rect x="328" y="200" width="78" height="50" rx="8" fill="url(#genGrad)" stroke="#c09820" stroke-width="2"/>
+          <!-- generator end caps -->
+          <ellipse cx="328" cy="225" rx="8" ry="25" fill="#e8c840" stroke="#c09820" stroke-width="1.5"/>
+          <ellipse cx="406" cy="225" rx="8" ry="25" fill="#e8c840" stroke="#c09820" stroke-width="1.5"/>
+          <!-- cooling fins on generator -->
+          <line x1="340" y1="200" x2="340" y2="250" stroke="#c09820" stroke-width="1" opacity="0.4"/>
+          <line x1="355" y1="200" x2="355" y2="250" stroke="#c09820" stroke-width="1" opacity="0.4"/>
+          <line x1="370" y1="200" x2="370" y2="250" stroke="#c09820" stroke-width="1" opacity="0.4"/>
+          <line x1="385" y1="200" x2="385" y2="250" stroke="#c09820" stroke-width="1" opacity="0.4"/>
+          <line x1="400" y1="200" x2="400" y2="250" stroke="#c09820" stroke-width="1" opacity="0.4"/>
+          <!-- Generator rotor indicator -->
+          <g class="generator-rotor" id="gr">
+            <circle cx="367" cy="225" r="16" fill="#f8e060" opacity="0.3" stroke="#d4b020" stroke-width="1"/>
+            <line x1="367" y1="209" x2="367" y2="241" stroke="#b08000" stroke-width="3" stroke-linecap="round"/>
+            <line x1="351" y1="225" x2="383" y2="225" stroke="#b08000" stroke-width="3" stroke-linecap="round"/>
+            <line x1="356" y1="214" x2="378" y2="236" stroke="#b08000" stroke-width="2" stroke-linecap="round" opacity="0.6"/>
+            <line x1="378" y1="214" x2="356" y2="236" stroke="#b08000" stroke-width="2" stroke-linecap="round" opacity="0.6"/>
+            <circle cx="367" cy="225" r="5" fill="white" stroke="#d4b020" stroke-width="1.5"/>
+          </g>
+          <!-- GENERATOR label -->
+          <text x="367" y="196" text-anchor="middle" font-size="9" fill="#806000" font-family="Nunito" font-weight="700">Generator</text>
+
+          <!-- POWER TRANSMISSION LINE -->
+          <line x1="414" y1="215" x2="450" y2="208" stroke="#6aaa7a" stroke-width="2.5"/>
+          <line x1="414" y1="222" x2="450" y2="215" stroke="#6aaa7a" stroke-width="1.5" stroke-dasharray="5,4" opacity="0.6"/>
+          <line x1="414" y1="228" x2="450" y2="222" stroke="#6aaa7a" stroke-width="1.5" stroke-dasharray="5,4" opacity="0.4"/>
+
+          <!-- TRANSFORMER / OUTPUT BOX -->
+          <rect x="448" y="192" width="90" height="60" rx="9" fill="#B8D8C0" stroke="#6aaa7a" stroke-width="2"/>
+          <!-- transformer core symbol -->
+          <rect x="462" y="200" width="12" height="26" rx="2" fill="#8aba90" stroke="#5a9060" stroke-width="1"/>
+          <rect x="480" y="200" width="12" height="26" rx="2" fill="#8aba90" stroke="#5a9060" stroke-width="1"/>
+          <!-- coil symbol -->
+          <path d="M462,207 Q468,203 474,207 Q480,211 486,207 Q492,203 498,207" fill="none" stroke="#3a7048" stroke-width="1.5"/>
+          <path d="M462,215 Q468,211 474,215 Q480,219 486,215 Q492,211 498,215" fill="none" stroke="#3a7048" stroke-width="1.5"/>
+          <text x="493" y="238" text-anchor="middle" font-size="9" fill="#2a5030" font-family="Nunito" font-weight="700">OUTPUT</text>
+          <text x="493" y="250" text-anchor="middle" font-size="11" fill="#2a5030" font-family="Nunito" font-weight="700" id="svg-power">—</text>
+          <text x="493" y="260" text-anchor="middle" font-size="7.5" fill="#5a9060" font-family="Nunito">kW</text>
+          <!-- OUTPUT label -->
+          <text x="493" y="188" text-anchor="middle" font-size="8" fill="#3a7048" font-family="Nunito" font-weight="700">Trafo/Jaringan</text>
+
+          <!-- LIGHTNING BOLT animated -->
+          <g class="bolt" transform="translate(432,186)">
+            <polygon points="8,0 3,12 9,12 1,26 5,26 0,40 16,16 10,16 14,2" fill="#FFF0A0" stroke="#d4b830" stroke-width="0.8"/>
+          </g>
+
+          <!-- WATER LEVEL indicator on reservoir -->
+          <line x1="30" y1="80" x2="145" y2="80" stroke="#a8d8ea" stroke-width="1" stroke-dasharray="3,3" opacity="0.7"/>
+          <text x="28" y="77" text-anchor="start" font-size="7" fill="#3a8aaa" font-family="Nunito" opacity="0.8">▲ Muka Air</text>
+        </svg>
+      </div>
+
+      <div class="stats-row">
+        <div class="sc"><div class="sl">Debit</div><div class="sv" id="s-q">—</div></div>
+        <div class="sc"><div class="sl">Head</div><div class="sv" id="s-h">—</div></div>
+        <div class="sc"><div class="sl">Efisiensi</div><div class="sv" id="s-e">—</div></div>
+      </div>
     </div>
 
-    <!-- METER BAR -->
-    <div class="card meter-wrap">
+    <!-- MAIN OUTPUT -->
+    <div class="out-main">
       <div class="meter-labels">
         <span>Output Power</span>
         <span id="m-label">— kW / 1000 kW maks</span>
@@ -494,7 +699,7 @@ input[type=number]:focus { border-color: var(--sky-dk); background: white; }
       <div class="out-card oc-rupiah">
         <div class="oc-lbl">💰 Nilai Energi/Bulan</div>
         <div class="oc-val" id="o-rupiah">—</div>
-        <div class="oc-unit2">@ Rp 1.699/kWh (PLN)</div>
+        <div class="oc-unit2">Rp 1.699/kWh (PLN)</div>
       </div>
     </div>
 
@@ -503,7 +708,7 @@ input[type=number]:focus { border-color: var(--sky-dk); background: white; }
       <div class="out-card oc-mbg">
         <div class="oc-lbl">🍱 Setara MBG / Bulan</div>
         <div class="oc-val" id="o-mbg">—<span class="oc-unit2"> porsi</span></div>
-        <div class="oc-unit2">@ Rp 10.000/porsi MBG</div>
+        <div class="oc-unit2">Rp 10.000/porsi MBG</div>
       </div>
       <div class="out-card oc-rumah">
         <div class="oc-lbl">🏠 Rumah Tersuplai</div>
@@ -515,118 +720,22 @@ input[type=number]:focus { border-color: var(--sky-dk); background: white; }
     <!-- HOUSE VISUALIZATION -->
     <div class="house-strip">
       <div class="hs-title">🏘️ Rumah yang tersuplai energi ini</div>
-      <div class="house-row" id="house-row">
-        <span style="color:var(--muted);font-size:0.8rem">Belum ada estimasi...</span>
-      </div>
+      <div class="house-number" id="house-number">—</div>
       <div class="house-count" id="house-count"></div>
     </div>
 
-    <!-- VISUALIZATION -->
-    <div class="viz-card">
-      <div class="viz-head">
-        <h2>🌊 Visualisasi Sistem Turbin Air</h2>
-      </div>
-      <div class="scene-bg">
-        <svg id="scene" viewBox="0 0 520 260" xmlns="http://www.w3.org/2000/svg">
-          <!-- BG -->
-          <rect width="520" height="260" fill="#eaf5fd" rx="10"/>
-          <path d="M0,150 Q100,110 200,130 Q320,155 420,115 L520,120 L520,260 L0,260Z" fill="#e0f2e8" opacity="0.5"/>
-
-          <!-- RESERVOIR -->
-          <rect x="20" y="38" width="88" height="52" rx="8" fill="#A8D8EA" stroke="#5aaaca" stroke-width="1.5" opacity="0.7"/>
-          <text x="64" y="30" text-anchor="middle" font-size="8.5" fill="#5aaaca" font-family="Nunito" font-weight="700">Reservoir</text>
-          <!-- wave -->
-          <g class="wave-g" style="animation-duration:3.5s">
-            <path d="M16,60 Q30,55 46,60 Q62,65 78,60 Q94,55 110,60 Q126,65 142,60" fill="none" stroke="#5aaaca" stroke-width="1.5" opacity="0.5"/>
-          </g>
-
-          <!-- HEAD bracket -->
-          <line x1="15" y1="89" x2="15" y2="196" stroke="#B8D8C0" stroke-width="1" stroke-dasharray="3,3"/>
-          <line x1="11" y1="89" x2="19" y2="89" stroke="#B8D8C0" stroke-width="1.5"/>
-          <line x1="11" y1="196" x2="19" y2="196" stroke="#B8D8C0" stroke-width="1.5"/>
-          <text x="8" y="145" text-anchor="middle" font-size="8" fill="#6aaa7a" transform="rotate(-90,8,145)" font-family="Nunito">H = <tspan id="svg-h">10</tspan> m</text>
-
-          <!-- PENSTOCK vertical -->
-          <rect x="46" y="88" width="20" height="108" rx="4" fill="#A8D8EA" stroke="#5aaaca" stroke-width="1.5" opacity="0.8"/>
-          <!-- water in penstock -->
-          <line x1="56" y1="98" x2="56" y2="190" class="wflow-v" id="vfl" stroke="#5aaaca" stroke-width="3" opacity="0.9"/>
-
-          <!-- HORIZONTAL CHANNEL -->
-          <rect x="58" y="183" width="110" height="16" rx="4" fill="#A8D8EA" stroke="#5aaaca" stroke-width="1.5" opacity="0.8"/>
-          <!-- water in channel -->
-          <line x1="68" y1="191" x2="163" y2="191" class="wflow-h" id="hfl" stroke="#5aaaca" stroke-width="3" opacity="0.9"/>
-
-          <!-- TURBINE HOUSING -->
-          <ellipse cx="214" cy="178" rx="34" ry="34" fill="#DDF0F8" stroke="#5aaaca" stroke-width="2"/>
-          <ellipse cx="214" cy="178" rx="25" ry="25" fill="#C5E8F5" stroke="#5aaaca" stroke-width="1"/>
-
-          <!-- TURBINE BLADES -->
-          <g class="turbine-blades" id="tb">
-            <ellipse cx="214" cy="160" rx="5.5" ry="13" fill="#5aaaca" opacity="0.88"/>
-            <ellipse cx="214" cy="160" rx="5.5" ry="13" fill="#5aaaca" opacity="0.88" transform="rotate(45,214,178)"/>
-            <ellipse cx="214" cy="160" rx="5.5" ry="13" fill="#5aaaca" opacity="0.88" transform="rotate(90,214,178)"/>
-            <ellipse cx="214" cy="160" rx="5.5" ry="13" fill="#5aaaca" opacity="0.88" transform="rotate(135,214,178)"/>
-            <ellipse cx="214" cy="160" rx="5.5" ry="13" fill="#5aaaca" opacity="0.88" transform="rotate(180,214,178)"/>
-            <ellipse cx="214" cy="160" rx="5.5" ry="13" fill="#5aaaca" opacity="0.88" transform="rotate(225,214,178)"/>
-            <ellipse cx="214" cy="160" rx="5.5" ry="13" fill="#5aaaca" opacity="0.88" transform="rotate(270,214,178)"/>
-            <ellipse cx="214" cy="160" rx="5.5" ry="13" fill="#5aaaca" opacity="0.88" transform="rotate(315,214,178)"/>
-            <circle cx="214" cy="178" r="5" fill="white" stroke="#5aaaca" stroke-width="2"/>
-          </g>
-
-          <!-- Turbine label — placed ABOVE turbine so tailrace doesn't overlap -->
-          <text x="214" y="146" text-anchor="middle" font-size="8" fill="#3a8aaa" font-family="Nunito" font-weight="700">Turbin</text>
-          <text x="214" y="136" text-anchor="middle" font-size="7.5" fill="#5aaaca" font-family="Nunito" id="svg-q">Q: 1.2 m³/s</text>
-
-          <!-- SHAFT -->
-          <rect x="248" y="175" width="56" height="6" rx="3" fill="#B8D8C0"/>
-          <circle class="rip" cx="274" cy="178" r="4" fill="none" stroke="#B8D8C0" stroke-width="1.5" opacity="0.8" style="animation-delay:0s"/>
-          <circle class="rip" cx="274" cy="178" r="4" fill="none" stroke="#B8D8C0" stroke-width="1.5" opacity="0.6" style="animation-delay:0.7s"/>
-
-          <!-- GENERATOR -->
-          <rect x="304" y="152" width="78" height="52" rx="10" fill="#FFF0A0" stroke="#d4b830" stroke-width="1.5"/>
-          <text x="343" y="147" text-anchor="middle" font-size="8.5" fill="#c08000" font-family="Nunito" font-weight="700">Generator</text>
-
-          <g class="generator-rotor" id="gr">
-            <circle cx="360" cy="178" r="15" fill="#f5c96e" opacity="0.35" stroke="#d4b830" stroke-width="1"/>
-            <line x1="360" y1="163" x2="360" y2="193" stroke="#d4b830" stroke-width="2.5" stroke-linecap="round"/>
-            <line x1="345" y1="178" x2="375" y2="178" stroke="#d4b830" stroke-width="2.5" stroke-linecap="round"/>
-            <line x1="350" y1="168" x2="370" y2="188" stroke="#d4b830" stroke-width="1.5" stroke-linecap="round" opacity="0.5"/>
-            <line x1="370" y1="168" x2="350" y2="188" stroke="#d4b830" stroke-width="1.5" stroke-linecap="round" opacity="0.5"/>
-            <circle cx="360" cy="178" r="4" fill="white" stroke="#d4b830" stroke-width="1.5"/>
-          </g>
-
-          <!-- POWER LINE -->
-          <line x1="382" y1="178" x2="420" y2="178" stroke="#B8D8C0" stroke-width="2"/>
-          <line x1="382" y1="173" x2="420" y2="173" stroke="#B8D8C0" stroke-width="1" stroke-dasharray="4,4" opacity="0.6"/>
-
-          <!-- BOLT -->
-          <g class="bolt" transform="translate(410,150)">
-            <polygon points="9,0 4,14 11,14 1,28 6,28 0,44 18,18 11,18 16,4" fill="#FFF0A0" stroke="#d4b830" stroke-width="0.8"/>
-          </g>
-
-          <!-- OUTPUT BOX -->
-          <rect x="432" y="152" width="74" height="52" rx="10" fill="#B8D8C0" stroke="#6aaa7a" stroke-width="1.5"/>
-          <text x="469" y="170" text-anchor="middle" font-size="8" fill="#3a6a48" font-family="Nunito" font-weight="700">OUTPUT</text>
-          <text x="469" y="186" text-anchor="middle" font-size="12" fill="#3a6a48" font-family="Nunito" font-weight="700" id="svg-power">—</text>
-          <text x="469" y="198" text-anchor="middle" font-size="8" fill="#6aaa7a" font-family="Nunito">kW</text>
-
-          <!-- TAILRACE — placed below turbine, far from label area -->
-          <!-- Goes downward first (y=212+) then left, well below turbine labels -->
-          <path d="M214,212 Q214,238 190,242 Q165,246 140,244 Q110,242 85,248" fill="none" stroke="#A8D8EA" stroke-width="12" stroke-linecap="round" opacity="0.6"/>
-          <path d="M214,212 Q214,238 190,242 Q165,246 140,244 Q110,242 85,248" class="wflow-h" id="tailfl" fill="none" stroke="#5aaaca" stroke-width="2.5" opacity="0.5"/>
-          <text x="148" y="258" text-anchor="middle" font-size="7.5" fill="#5aaaca" font-family="Nunito">Saluran Buang</text>
-        </svg>
-      </div>
-
-      <div class="stats-row">
-        <div class="sc"><div class="sl">Debit</div><div class="sv" id="s-q">—</div></div>
-        <div class="sc"><div class="sl">Head</div><div class="sv" id="s-h">—</div></div>
-        <div class="sc"><div class="sl">Efisiensi</div><div class="sv" id="s-e">—</div></div>
-      </div>
-    </div>
+    <!-- MAIN OUTPUT already shown above in viz-card -->
 
   </div><!-- /right -->
 </div><!-- /layout -->
+
+<!-- AUTO REPORT — paling akhir -->
+<div style="max-width:1120px;margin:0 auto 20px;">
+  <div class="report-card">
+    <div class="rt">📋 Auto Report</div>
+    <div class="rb" id="report-txt">Atur parameter untuk menghasilkan laporan otomatis...</div>
+  </div>
+</div>
 
 <script>
 // ============ SYNC ============
@@ -676,32 +785,17 @@ function getCategory(P) {
 
 // ============ HOUSES ============
 function renderHouses(n) {
-  const row   = document.getElementById('house-row');
-  const count = document.getElementById('house-count');
-  row.innerHTML = '';
+  const numEl  = document.getElementById('house-number');
+  const count  = document.getElementById('house-count');
   if (n <= 0) {
-    row.innerHTML = '<span style="color:var(--muted);font-size:0.8rem">Daya belum cukup...</span>';
-    count.textContent = '';
+    numEl.textContent = '—';
+    numEl.style.color = 'var(--muted)';
+    count.textContent = 'Daya belum cukup...';
     return;
   }
-  const show = Math.min(n, 80);
-  const frag = document.createDocumentFragment();
-  for (let i = 0; i < show; i++) {
-    const sp = document.createElement('span');
-    sp.className = 'house-icon';
-    sp.title = 'Rumah ' + (i + 1);
-    // vary house emoji for fun
-    sp.textContent = i % 5 === 0 ? '🏡' : '🏠';
-    frag.appendChild(sp);
-  }
-  row.appendChild(frag);
-  if (n > show) {
-    const more = document.createElement('span');
-    more.style.cssText = 'font-size:0.78rem;color:var(--lavender-dk);font-weight:700;align-self:center;margin-left:4px;';
-    more.textContent = '+' + (n - show).toLocaleString('id-ID') + ' lagi';
-    row.appendChild(more);
-  }
-  count.textContent = `Total: ${n.toLocaleString('id-ID')} rumah tangga dapat tersuplai`;
+  numEl.style.color = 'var(--lavender-dk)';
+  numEl.textContent = n.toLocaleString('id-ID');
+  count.textContent = `rumah tangga dapat tersuplai (≈ 10 kWh/hari/rumah)`;
 }
 
 // ============ CALCULATE ============
@@ -800,7 +894,7 @@ function calculate() {
   document.getElementById('report-txt').innerHTML =
     `Sistem menghasilkan daya <strong>${P_kw.toFixed(2)} kW</strong> dengan head <strong>${H} m</strong> dan debit <strong>${Q.toFixed(1)} m³/s</strong>. Kategori: <strong>${cat.emoji} ${cat.label}</strong>.<br><br>
      Energi harian <strong>${e_day.toFixed(1)} kWh</strong>, setara <strong>${fmtRupiah(rupiah_mon)}/bulan</strong> (tarif PLN Rp 1.699/kWh) atau <strong>${rupTahun}/tahun</strong>.<br><br>
-     💡 Nilai ini dapat membiayai sekitar <strong>${mbg_count.toLocaleString('id-ID')} porsi Makanan Bergizi Gratis (MBG)</strong> per bulan (@Rp 10.000/porsi) dan menyuplai listrik <strong>${rumah.toLocaleString('id-ID')} rumah tangga</strong>. ${efKomen}`;
+     💡 Nilai ini dapat membiayai sekitar <strong>${mbg_count.toLocaleString('id-ID')} porsi Makanan Bergizi Gratis (MBG)</strong> per bulan (Rp 10.000/porsi) dan menyuplai listrik <strong>${rumah.toLocaleString('id-ID')} rumah tangga</strong>. ${efKomen}`;
 }
 
 // Init
