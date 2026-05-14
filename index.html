@@ -895,8 +895,8 @@ function calculate() {
               : 'Efisiensi optimal.';
   document.getElementById('report-txt').innerHTML =
     `Sistem menghasilkan daya <strong>${P_kw.toFixed(2)} kW</strong> dengan head <strong>${H} m</strong> dan debit <strong>${Q.toFixed(1)} m³/s</strong>.<br>
-    Kategori: <strong>${cat.emoji} ${cat.label}</strong>.<br><br>
-     Energi harian <strong>${e_day.toFixed(1)} kWh</strong>, setara <strong>${fmtRupiah(rupiah_mon)}/bulan</strong> (tarif PLN Rp 1.699/kWh) atau <strong>${rupTahun}/tahun</strong>.<br><br>
+    Kategori: <strong>${cat.emoji} ${cat.label}</strong>.<br>
+     Energi harian <strong>${e_day.toFixed(1)} kWh</strong>, setara <strong>${fmtRupiah(rupiah_mon)}/bulan</strong> (tarif PLN Rp 1.699/kWh) atau <strong>${rupTahun}/tahun</strong>.<br>
      💡 Nilai ini dapat membiayai sekitar <strong>${mbg_count.toLocaleString('id-ID')} porsi Makanan Bergizi Gratis (MBG)</strong> per bulan (Rp 10.000/porsi) dan menyuplai listrik <strong>${rumah.toLocaleString('id-ID')} rumah tangga</strong>. ${efKomen}`;
 }
 
