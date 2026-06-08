@@ -859,15 +859,29 @@ function calculate() {
   document.getElementById('svg-q').textContent    = `Q: ${Q.toFixed(1)} m³/s`;
   document.getElementById('svg-power').textContent = P_kw >= 1000 ? (P_kw/1000).toFixed(1)+'M' : P_kw.toFixed(1);
 
-  // animation speed
-  const qRatio = (Q - 0.1) / (50 - 0.1);
-  const spd    = 0.3 + (1 - qRatio) * 3.5;
-  const wSpd   = 0.5 + (1 - qRatio) * 3;
-  document.getElementById('tb').style.animationDuration   = spd + 's';
-  document.getElementById('gr').style.animationDuration   = spd + 's';
-  document.getElementById('vfl').style.animationDuration  = wSpd + 's';
-  document.getElementById('hfl').style.animationDuration  = wSpd + 's';
-  document.getElementById('tailfl').style.animationDuration = wSpd + 's';
+  // animation speed — pakai playbackRate agar selalu konsisten
+  const qRatio  = (Q - 0.1) / (50 - 0.1);
+  const turbRate = 0.3 + qRatio * 4.7;
+  const flowRate = 0.3 + qRatio * 3.7;
+
+  ['tb','gr'].forEach(id => {
+    const el = document.getElementById(id);
+    const anims = el.getAnimations();
+    if (anims.length) {
+      anims.forEach(a => { a.playbackRate = turbRate; a.play(); });
+    } else {
+      el.style.animationDuration = (1 / turbRate) + 's';
+    }
+  });
+  ['vfl','hfl','tailfl'].forEach(id => {
+    const el = document.getElementById(id);
+    const anims = el.getAnimations();
+    if (anims.length) {
+      anims.forEach(a => { a.playbackRate = flowRate; a.play(); });
+    } else {
+      el.style.animationDuration = (1 / flowRate) + 's';
+    }
+  });
 
   // water color
   const r2 = Math.round(168 - qRatio * 130);
